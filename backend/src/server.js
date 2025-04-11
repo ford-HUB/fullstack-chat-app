@@ -1,4 +1,3 @@
-// import { server } from "./config/socket.js"
 import { server } from "./app.js"
 import { config } from "dotenv"
 import { dbConnection } from "./config/db.js"
