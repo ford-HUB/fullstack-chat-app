@@ -9,6 +9,9 @@ const SideBar = ({ children }) => {
     const { onlineUsers } = authStore()
     const { pathname } = useLocation()
 
+    const uniqueOnlineUsers = [...new Set(onlineUsers.map(user => user.userId))]; // to prevent doplication if ever man gani
+
+
     const navigate = useNavigate()
 
     return (
@@ -27,7 +30,7 @@ const SideBar = ({ children }) => {
                                 className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
                                 onClick={null}
                             >
-                                {onlineUsers.length}
+                                {uniqueOnlineUsers.length}
                             </span>
                         )}
                     </div>
