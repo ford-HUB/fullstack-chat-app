@@ -34,9 +34,13 @@ export const chatStore = create((set) => ({
             console.log('checkMessages fails', error.message)
         }
     },
-    sendMessage: async (message) => {
+    sendMessage: async (formData) => {
         try {
-            await axiosInstance.post('/chat/sendMessage', { receivedMessage: message })
+            await axiosInstance.post('/chat/sendMessage', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
         } catch (error) {
             console.log('send message fails', error.message)
             return false

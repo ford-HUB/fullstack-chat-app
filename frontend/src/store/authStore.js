@@ -96,7 +96,7 @@ export const authStore = create((set, get) => ({
         newSocket.connect()
 
         newSocket.on('fireOnlineUsers', (users) => {
-            set({ onlineUsers: users })
+            set({ onlineUsers: [...get().onlineUsers, ...users] })
         })
         set({ socket: newSocket })
     },

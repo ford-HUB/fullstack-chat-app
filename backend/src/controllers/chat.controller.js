@@ -1,24 +1,51 @@
 import { Message } from '../models/Message.model.js'
+import cloudinary from '../config/cloudinary.js'
 import { io } from '../config/socket.js'
 
 import { User } from '../models/User.models.js'
 
 export const fireMessage = async (req, res) => {
     try {
-        const { receivedMessage } = req.body
+        const { message } = req.body
+        const media = req.file
 
         const userId = req.user._id
 
-        if (!receivedMessage) { return res.json({ success: false, message: 'you cannot send an empty message ' }) }
+        let mediaPayload = null
+
+        if (!message) { return res.json({ success: false, message: 'you cannot send an empty message ' }) }
 
         const isUserValid = await User.findById(userId)
         if (!isUserValid) { return res.json({ success: false, message: 'user id not found' }) }
 
+        if (media && media.path) {
+            try {
+                const uploadedMedia = await cloudinary.uploader.upload(media.path, {
+                    folder: 'chat_media',
+                    resource_type: 'auto'
+                });
+
+                mediaPayload = {
+                    public_id: uploadedMedia.public_id,
+                    url: uploadedMedia.secure_url
+                };
+
+                console.log('Image successfully uploaded to Cloudinary');
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.json({
+                    success: false,
+                    error: 'Failed to upload image to Cloudinary'
+                });
+            }
+        }
+
+
         const newMessage = new Message({
             sender: isUserValid._id,
-            message: receivedMessage,
+            message: message || '',
             isSystem: false,
-            media: ''
+            media: mediaPayload
         })
 
         if (newMessage) {
